@@ -1,0 +1,6 @@
+# Environment files (API keys, secrets)
+.env
+.env.local
+.env.*
+.envrc
+phase-log.md
