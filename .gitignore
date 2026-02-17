@@ -4,3 +4,10 @@
 .env.*
 .envrc
 phase-log.md
+
+# Processed data
+*.db
+
+# Python
+__pycache__/
+*.pyc
