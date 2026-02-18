@@ -1,6 +1,33 @@
 import { formatCurrency } from '../lib/format';
 import styles from './WhitespaceTable.module.css';
 
+const HEADERS = [
+  '#',
+  'Agency',
+  'Total Spend',
+  'Tenders',
+  'Suppliers',
+  'Top Competitors',
+  'Top Tenders (by $)',
+  'Top Tenders (by Count)',
+];
+
+function TenderList({ items, mode }) {
+  if (!items || items.length === 0) return <span className={styles.muted}>—</span>;
+  return (
+    <ul className={styles.nestedList}>
+      {items.map((t, i) => (
+        <li key={i} title={t.description}>
+          <span className={styles.tenderDesc}>{t.description}</span>{' '}
+          <span className={styles.tenderMeta}>
+            {mode === 'value' ? formatCurrency(t.total_value) : `${t.count}x`}
+          </span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export default function WhitespaceTable({ data, loading }) {
   if (loading) {
     return (
@@ -8,18 +35,15 @@ export default function WhitespaceTable({ data, loading }) {
         <table className={styles.table}>
           <thead>
             <tr>
-              <th className={styles.th}>#</th>
-              <th className={styles.th}>Agency</th>
-              <th className={styles.th}>Total Spend</th>
-              <th className={styles.th}>Tenders</th>
-              <th className={styles.th}>Suppliers</th>
-              <th className={styles.th}>Top Competitors</th>
+              {HEADERS.map((h) => (
+                <th key={h} className={styles.th}>{h}</th>
+              ))}
             </tr>
           </thead>
           <tbody>
             {[...Array(5)].map((_, i) => (
               <tr key={i}>
-                {[...Array(6)].map((_, j) => (
+                {HEADERS.map((_, j) => (
                   <td key={j} className={styles.td}>
                     <div className="skeleton" style={{ width: '70%', height: 16 }} />
                   </td>
@@ -48,12 +72,9 @@ export default function WhitespaceTable({ data, loading }) {
       <table className={styles.table}>
         <thead>
           <tr>
-            <th className={styles.th}>#</th>
-            <th className={styles.th}>Agency</th>
-            <th className={styles.th}>Total Spend</th>
-            <th className={styles.th}>Tenders</th>
-            <th className={styles.th}>Suppliers</th>
-            <th className={styles.th}>Top Competitors</th>
+            {HEADERS.map((h) => (
+              <th key={h} className={styles.th}>{h}</th>
+            ))}
           </tr>
         </thead>
         <tbody>
@@ -75,6 +96,12 @@ export default function WhitespaceTable({ data, loading }) {
                     </li>
                   ))}
                 </ul>
+              </td>
+              <td className={styles.td}>
+                <TenderList items={row.top_tenders_by_value} mode="value" />
+              </td>
+              <td className={styles.td}>
+                <TenderList items={row.top_tenders_by_count} mode="count" />
               </td>
             </tr>
           ))}

@@ -9,6 +9,15 @@ import WhitespaceForm from '../../components/WhitespaceForm';
 import WhitespaceTable from '../../components/WhitespaceTable';
 import styles from './page.module.css';
 
+const WS_TOOLTIPS = {
+  agencies:
+    'Number of agencies that spend in this category but have never awarded a tender to the selected supplier.',
+  spend:
+    'Total dollar value of tenders from white-space agencies. This is the addressable market the supplier is currently missing.',
+  share:
+    'White-space spend as a percentage of total category spend. 100% means the supplier has zero awards in this category — all spend is untapped.',
+};
+
 export default function WhitespacePage() {
   const [wsParams, setWsParams] = useState(null);
 
@@ -56,16 +65,19 @@ export default function WhitespacePage() {
               label="White-Space Agencies"
               value={formatNumber(wsData.summary.num_whitespace_agencies)}
               loading={wsLoading}
+              tooltip={WS_TOOLTIPS.agencies}
             />
             <KpiCard
               label="White-Space Spend"
               value={formatCurrency(wsData.summary.whitespace_total_spend)}
               loading={wsLoading}
+              tooltip={WS_TOOLTIPS.spend}
             />
             <KpiCard
               label="Share of Category"
               value={formatPercent(wsData.summary.whitespace_share_pct)}
               loading={wsLoading}
+              tooltip={WS_TOOLTIPS.share}
             />
           </div>
 

@@ -439,7 +439,7 @@ def whitespace_agencies(
                 "num_suppliers": row[3],
             })
 
-    # Step 5: for each white-space agency, get top 3 competitors
+    # Step 5: for each white-space agency, get top 3 competitors + top tender descriptions
     for agency_info in ws_agencies[:limit]:
         comp_params = list(params) + [agency_info["agency"]]
         competitors = conn.execute(
@@ -456,6 +456,40 @@ def whitespace_agencies(
         ).fetchall()
         agency_info["top_competitors"] = [
             {"supplier": c[0], "spend": c[1]} for c in competitors
+        ]
+
+        # Top tender descriptions by dollar value
+        top_by_value = conn.execute(
+            f"""
+            SELECT tender_description, COALESCE(SUM(awarded_amt), 0) AS total_value
+            FROM tenders
+            {where}
+            {"AND" if where else "WHERE"} agency = ?
+            GROUP BY tender_description
+            ORDER BY total_value DESC
+            LIMIT 3
+            """,
+            comp_params,
+        ).fetchall()
+        agency_info["top_tenders_by_value"] = [
+            {"description": r[0], "total_value": r[1]} for r in top_by_value
+        ]
+
+        # Top tender descriptions by count
+        top_by_count = conn.execute(
+            f"""
+            SELECT tender_description, COUNT(*) AS cnt
+            FROM tenders
+            {where}
+            {"AND" if where else "WHERE"} agency = ?
+            GROUP BY tender_description
+            ORDER BY cnt DESC
+            LIMIT 3
+            """,
+            comp_params,
+        ).fetchall()
+        agency_info["top_tenders_by_count"] = [
+            {"description": r[0], "count": r[1]} for r in top_by_count
         ]
 
     ws_agencies = ws_agencies[:limit]

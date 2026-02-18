@@ -30,32 +30,55 @@ const SUPPLIER_COLUMNS = [
   { key: 'num_agencies', label: 'Agencies', format: formatNumber },
 ];
 
+const CATEGORIES = [
+  { value: '', label: 'All Categories' },
+  { value: 'diagnostics', label: 'Diagnostics' },
+  { value: 'devices', label: 'Devices' },
+  { value: 'consumables', label: 'Consumables' },
+  { value: 'pharma_biotech', label: 'Pharma & Biotech' },
+  { value: 'dental', label: 'Dental' },
+  { value: 'services', label: 'Services' },
+  { value: 'general', label: 'General' },
+];
+
 export default function Dashboard() {
   const [filters, setFilters] = useState({
-    medicalOnly: true,
-    category: null,
     dateFrom: null,
     dateTo: null,
   });
+  const [category, setCategory] = useState(null);
+  const [agency, setAgency] = useState(null);
   const [tableView, setTableView] = useState('agencies');
 
+  const base = { medicalOnly: true, ...filters };
+
   const { data: market, isLoading: marketLoading, error: marketError } = useSWR(
-    marketUrl(filters),
+    marketUrl(base),
     fetcher
   );
 
   const { data: spendData, isLoading: spendLoading } = useSWR(
-    spendOverTimeUrl({ ...filters, period: 'monthly' }),
+    spendOverTimeUrl({ ...base, period: 'monthly', category, agency }),
+    fetcher
+  );
+
+  // Fetch agency list for dropdown
+  const { data: agencyList } = useSWR(
+    topAgenciesUrl({ ...base, limit: 200 }),
     fetcher
   );
 
   const { data: agencies, isLoading: agenciesLoading } = useSWR(
-    tableView === 'agencies' ? topAgenciesUrl({ ...filters, limit: 10 }) : null,
+    tableView === 'agencies'
+      ? topAgenciesUrl({ ...base, category, limit: 20 })
+      : null,
     fetcher
   );
 
   const { data: suppliers, isLoading: suppliersLoading } = useSWR(
-    tableView === 'suppliers' ? topSuppliersUrl({ ...filters, limit: 10 }) : null,
+    tableView === 'suppliers'
+      ? topSuppliersUrl({ ...base, category, agency, limit: 20 })
+      : null,
     fetcher
   );
 
@@ -105,7 +128,7 @@ export default function Dashboard() {
           <div className={styles.toggle}>
             <button
               className={`${styles.toggleBtn} ${tableView === 'agencies' ? styles.toggleBtnActive : ''}`}
-              onClick={() => setTableView('agencies')}
+              onClick={() => { setTableView('agencies'); setAgency(null); }}
             >
               Agencies
             </button>
@@ -116,6 +139,41 @@ export default function Dashboard() {
               Suppliers
             </button>
           </div>
+        </div>
+
+        <div className={styles.tableFilters}>
+          <div className={styles.filterGroup}>
+            <label className={styles.filterLabel}>Category</label>
+            <select
+              className={styles.filterSelect}
+              value={category || ''}
+              onChange={(e) => setCategory(e.target.value || null)}
+            >
+              {CATEGORIES.map((c) => (
+                <option key={c.value} value={c.value}>
+                  {c.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          {tableView === 'suppliers' && (
+            <div className={styles.filterGroup}>
+              <label className={styles.filterLabel}>Agency</label>
+              <select
+                className={styles.filterSelect}
+                value={agency || ''}
+                onChange={(e) => setAgency(e.target.value || null)}
+              >
+                <option value="">All Agencies</option>
+                {agencyList &&
+                  agencyList.map((a) => (
+                    <option key={a.agency} value={a.agency}>
+                      {a.agency}
+                    </option>
+                  ))}
+              </select>
+            </div>
+          )}
         </div>
 
         {tableView === 'agencies' ? (
