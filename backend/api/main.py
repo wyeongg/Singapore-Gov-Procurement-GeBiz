@@ -23,6 +23,7 @@ from backend.services.analytics import (
     subcategory_breakdown,
     whitespace_agencies,
 )
+from backend.api.chat import router as chat_router
 
 app = FastAPI(
     title="GeBIZ Medical Procurement API",
@@ -36,6 +37,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(chat_router)
 
 
 @contextmanager

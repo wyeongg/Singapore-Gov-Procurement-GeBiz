@@ -53,16 +53,16 @@ export default function SpendChart({ data, loading }) {
       <h3>Spend Over Time</h3>
       <ResponsiveContainer width="100%" height={300}>
         <ComposedChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+          <CartesianGrid strokeDasharray="3 3" stroke="#253040" />
           <XAxis
             dataKey="period"
-            tick={{ fontSize: 11, fill: '#86868b' }}
+            tick={{ fontSize: 11, fill: '#7d756a' }}
             tickLine={false}
-            axisLine={{ stroke: '#d2d2d7' }}
+            axisLine={{ stroke: '#253040' }}
           />
           <YAxis
             yAxisId="spend"
-            tick={{ fontSize: 11, fill: '#86868b' }}
+            tick={{ fontSize: 11, fill: '#7d756a' }}
             tickFormatter={formatCompactCurrency}
             tickLine={false}
             axisLine={false}
@@ -71,7 +71,7 @@ export default function SpendChart({ data, loading }) {
           <YAxis
             yAxisId="count"
             orientation="right"
-            tick={{ fontSize: 11, fill: '#86868b' }}
+            tick={{ fontSize: 11, fill: '#7d756a' }}
             tickLine={false}
             axisLine={false}
             width={40}

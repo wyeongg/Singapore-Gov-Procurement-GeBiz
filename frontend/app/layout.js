@@ -4,6 +4,7 @@ import { Inter } from 'next/font/google';
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
+import ChatWidget from '../components/ChatWidget';
 import './globals.css';
 import styles from './layout.module.css';
 
@@ -21,6 +22,7 @@ function NavBar() {
   if (embed) return null;
 
   return (
+    <>
     <nav className={styles.nav}>
       <span className={styles.navTitle}>GeBIZ Medical Analytics</span>
       <div className={styles.navLinks}>
@@ -38,6 +40,8 @@ function NavBar() {
         </Link>
       </div>
     </nav>
+    <ChatWidget />
+    </>
   );
 }
 
