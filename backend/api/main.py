@@ -6,6 +6,7 @@ Run from project root:
 
 from __future__ import annotations
 
+import os
 import sqlite3
 from contextlib import contextmanager
 from typing import Optional
@@ -30,10 +31,11 @@ app = FastAPI(
     version="0.1.0",
 )
 
-# Allow frontend (React dev server) to call the API
+# CORS — defaults to permissive for local dev; set CORS_ORIGINS on Render
+_origins = os.environ.get("CORS_ORIGINS", "*").split(",")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_origins,
     allow_methods=["*"],
     allow_headers=["*"],
 )

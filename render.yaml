@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: gebiz-api
+    runtime: python
+    buildCommand: pip install -r requirements.txt && python3 -m backend.etl.run_etl
+    startCommand: uvicorn backend.api.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: PYTHON_VERSION
+        value: "3.11"
